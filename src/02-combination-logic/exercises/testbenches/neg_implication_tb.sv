@@ -19,7 +19,7 @@ module neg_implication_tb;
       b = BParams[i];
       #10;
       assert(c === CExpected[i])
-        $display("!(%b -> %b) = %b",
+        $display("~(%b -> %b) = %b",
                 a, b, c);
       else begin
         $display({"Something went wrong:\n",

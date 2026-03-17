@@ -3,5 +3,5 @@ module neg_implication(
   input logic b,
   output logic c
 );
-  assign c = a & !b;
+  assign c = a & ~b;
 endmodule
