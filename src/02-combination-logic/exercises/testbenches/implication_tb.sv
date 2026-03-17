@@ -14,6 +14,7 @@ module implication_tb;
   );
 
   initial begin
+    $display("Implication test:");
     for (int i = 0; i < 4; ++i) begin
       a = AParams[i];
       b = BParams[i];
@@ -23,7 +24,7 @@ module implication_tb;
                 a, b, c);
       else begin
         $display({"Something went wrong:\n",
-                  "%b -> %b = %b (but expected %b)"},
+                  "a = %b, b = %b, c = %b, expected c = %b"},
                   a, b, c, CExpected[i]);
         $fatal;
       end
