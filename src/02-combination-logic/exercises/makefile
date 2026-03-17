@@ -1,4 +1,8 @@
 IVERILOG ?= iverilog
+VVP ?= vvp
+YOSYS = yosys
+NPX = npx
+
 SOURCES = implication.sv testbenches/implication_tb.sv
 TOPMODULE = implication_tb
 FLAGS = -g2012
@@ -6,15 +10,21 @@ FLAGS = -g2012
 .PHONY: all
 all: test
 
-.PHONY: build
 build: $(SOURCES)
 	mkdir -p build
 	$(IVERILOG) -s $(TOPMODULE) $^ $(FLAGS) -o build/$(TOPMODULE)
 
-.PHONY: test
 test: build
-	build/$(TOPMODULE)
+	$(VVP) build/$(TOPMODULE)
 
-.PHONY: clean
 clean:
 	rm -r build
+
+circuit:
+	mkdir -p build
+	$(YOSYS) -p "prep -top $(TOPMODULE); write_json build/$(TOPMODULE).json" $(SOURCES)
+	$(NPX) netlistsvg build/$(TOPMODULE).json -o build/$(TOPMODULE).svg
+
+.PHONY: test
+.PHONY: build
+.PHONY: clean
