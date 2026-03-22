@@ -13,20 +13,19 @@ module neg_implication_tb;
   );
 
   initial begin
-    $display("Negative implication test:");
+    $write("Negative implication test... ");
     for (int i = 0; i < 4; ++i) begin
       a = AParams[i];
       b = BParams[i];
       #10;
       assert(c === CExpected[i])
-        $display("~(%b -> %b) = %b",
-                a, b, c);
       else begin
-        $display({"Something went wrong:\n",
+        $display({"\nSomething went wrong:\n",
                   "a = %b, b = %b, c = %b, expected c = %b)"},
                   a, b, c, CExpected[i]);
         $fatal;
       end
     end
+    $display("OK");
   end
 endmodule
