@@ -1,5 +1,8 @@
 {
     "verilog.formatting.verilogHDL.formatter": "verible-verilog-format",
     "verilog.languageServer.veribleVerilogLs.enabled": true,
-    "verilog.linting.linter": "iverilog"
+    "verilog.linting.linter": "iverilog",
+    "[systemverilog]": {
+        "editor.tabSize": 2
+    }
 }
