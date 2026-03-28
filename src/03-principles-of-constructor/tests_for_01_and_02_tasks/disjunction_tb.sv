@@ -6,14 +6,14 @@ module disjunction_tb;
 
   const logic [3:0] CExpected = 4'b0111;
 
-  disjunction pa_or(
+  disjunction my_or(
     .a(a),
     .b(b),
     .res(c)
   );
 
   initial begin
-    $write("Disjunction with pierce arrow test... ");
+    $write("Disjunction test... ");
     for(int i = 0; i < 4; ++i) begin
       a = AParams[i];
       b = BParams[i];

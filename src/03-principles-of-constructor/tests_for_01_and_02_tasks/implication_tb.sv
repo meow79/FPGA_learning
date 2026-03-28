@@ -1,19 +1,19 @@
-module conjunction_tb;
+module implication_tb;
   logic a, b, c;
 
   const logic [3:0] AParams = 4'b0011;
   const logic [3:0] BParams = 4'b0101;
 
-  const logic [3:0] CExpected = 4'b0001;
+  const logic [3:0] CExpected = 4'b1101;
 
-  conjunction pa_and(
+  implication my_imp(
     .a(a),
     .b(b),
     .res(c)
   );
 
   initial begin
-    $write("Conjunction with pierce arrow test... ");
+    $write("Implication test... ");
     for(int i = 0; i < 4; ++i) begin
       a = AParams[i];
       b = BParams[i];
