@@ -19,8 +19,12 @@ src/
 │   └── testbenches            ──┘    с целью ознакомления с языком
 |
 └── 03-principles-of-constructor    # Выполненные упражения из 3 модуля курса
-    ├── 01_peirce_arrow_operations  # Первое упражнение
-    │   └── testbenches
-    └── build_and_test_all.sh       # Тест для CI для всего третьего модуля
-
+    ├── 01_peirce_arrow_operations
+    ├── 02_sheffer_stroke_operations
+    ├── 04_adder_k_n_bit_numbers
+    ├── 05_adder_k_int_numbers
+    ├── 06_bitvector_reduction
+    ├── 07_bitvector_reduction_with_custom_operation
+    ├── build_and_test_all.sh       # Тест для CI для первых двух упражнений третьего модуля
+    └── tests_for_01_and_02_tasks
 ```
