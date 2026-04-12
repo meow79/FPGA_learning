@@ -11,14 +11,14 @@ src/
 ├── 01-basic-environment            # hello_world.sv
 |
 ├── 02-combination-logic
-│   ├── exercises                   # Выполненные упражения из 2 модуля курса
+│   ├── exercises                   # Выполненные упражнения из 2 модуля курса
 │   │   └── testbenches             # Тестбенчи к выполненным упражнениям
 |   |   └── build_and_test_all.sh   # Тест для CI для всех упражнений второго модуля
 │   ├── adder_logic_1_bit.sv   ──┐
 │   ├── adder_logic_1_bit_tb.sv  |─ # Код на SystemVerilog, переписанный со страниц курса
 │   └── testbenches            ──┘    с целью ознакомления с языком
 |
-├── 03-principles-of-constructor    # Выполненные упражения из 3 модуля курса
+├── 03-principles-of-constructor    # Выполненные упражнения из 3 модуля курса
 │   ├── 01_peirce_arrow_operations
 │   ├── 02_sheffer_stroke_operations
 │   ├── 04_adder_k_n_bit_numbers
@@ -28,7 +28,7 @@ src/
 │   ├── build_and_test_all.sh       # Тест для CI для первых двух упражнений третьего модуля
 │   └── tests_for_01_and_02_tasks
 |
-└── 04-mux-demux                    # Выполненные упражения из 4 модуля курса
+└── 04-mux-demux                    # Выполненные упражнения из 4 модуля курса
     ├── 01_mux_4to1_logic
     ├── 02_mux_2to1_impl.sv
     ├── 03_lut_peirce_arrow
