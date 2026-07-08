@@ -1,0 +1,13 @@
+[options]
+mode bmc
+depth 1
+
+[engines]
+smtbmc z3
+
+[script]
+read -sv -formal neg_implication_fv.sv
+prep -top neg_implication_fv
+
+[files]
+../neg_implication_fv.sv
