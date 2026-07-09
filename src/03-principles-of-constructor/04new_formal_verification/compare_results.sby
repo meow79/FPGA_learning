@@ -1,0 +1,34 @@
+[options]
+mode bmc
+depth 1
+
+[engines]
+smtbmc z3
+
+[script]
+# Переименование модулей, чтобы использовать вместе реализации операций через стрелку Пирса и штрих Шеффера
+exec -- sed -i 's/conjunction/peirce_conjunction/' peirce_conjunction.sv
+exec -- sed -i 's/disjunction/peirce_disjunction/' peirce_disjunction.sv
+exec -- sed -i 's/implication/peirce_implication/' peirce_implication.sv
+
+exec -- sed -i 's/conjunction/sheffer_conjunction/' sheffer_conjunction.sv
+exec -- sed -i 's/disjunction/sheffer_disjunction/' sheffer_disjunction.sv
+exec -- sed -i 's/implication/sheffer_implication/' sheffer_implication.sv
+
+read -sv peirce_arrow.sv sheffer_stroke.sv
+read -sv peirce_conjunction.sv peirce_disjunction.sv peirce_implication.sv
+read -sv sheffer_conjunction.sv sheffer_disjunction.sv sheffer_implication.sv
+
+read -sv -formal compare_results.sv
+prep -top compare_results
+
+[files]
+compare_results.sv
+peirce_conjunction.sv ../01_peirce_arrow_operations/conjunction.sv
+peirce_disjunction.sv ../01_peirce_arrow_operations/disjunction.sv
+peirce_implication.sv ../01_peirce_arrow_operations/implication.sv
+sheffer_conjunction.sv ../02_sheffer_stroke_operations/conjunction.sv
+sheffer_disjunction.sv ../02_sheffer_stroke_operations/disjunction.sv
+sheffer_implication.sv ../02_sheffer_stroke_operations/implication.sv
+../../02-combination-logic/exercises/peirce_arrow.sv
+../../02-combination-logic/exercises/sheffer_stroke.sv
