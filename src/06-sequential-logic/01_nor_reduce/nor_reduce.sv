@@ -29,4 +29,33 @@ module nor_reduce(
       end
     end
   end
+
+  `ifdef FORMAL
+    logic past_valid = 1'b0;
+    logic [2:0] clk_cnt = '0;
+    always @(posedge clk) begin
+      past_valid <= 1'b1;
+      clk_cnt <= clk_cnt + 1;
+    end
+
+    initial begin
+      assume (rst);
+    end
+
+    always @(posedge clk) begin
+      if (past_valid && !rst && $past(rst))
+        assert (if_first_bit == 1'b1);
+      if (past_valid && !$past(rst) && !$past(if_first_bit))
+        assert (out == ~($past(out) | cur_bit));
+      if (past_valid && !$past(rst) && $past(if_first_bit))
+        assert (out == ~($past(cur_bit) | cur_bit));
+    end
+
+    always @(posedge clk) begin
+      if (clk_cnt > 2 && !rst && !$past(rst) && !$past(rst, 2) && !$past(rst, 3)) begin
+        cover (out == 1'b1 && $past(out) == 1'b0 && $past(out, 2) == 1'b1 &&
+               $past(out, 3) == 1'b0 && !$past(if_first_bit, 3));
+      end
+    end
+  `endif
 endmodule
