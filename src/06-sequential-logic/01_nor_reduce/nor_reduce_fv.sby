@@ -1,0 +1,15 @@
+[options]
+mode cover
+depth 10
+
+[engines]
+smtbmc z3
+
+[script]
+read -sv peirce_arrow.sv
+read -sv -formal nor_reduce.sv
+prep -top nor_reduce
+
+[files]
+../../02-combination-logic/exercises/peirce_arrow.sv
+nor_reduce.sv
