@@ -20,7 +20,7 @@ module pairwise(
     if (!aresetn) begin
       data_ff <= '0;
     end else if (s_valid && s_ready) begin
-      data_ff <= {data_ff[0], s_data};
+      data_ff <= {s_data, data_ff[1]};
     end
   end
 
