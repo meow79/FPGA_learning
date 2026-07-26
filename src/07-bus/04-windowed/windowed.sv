@@ -21,9 +21,9 @@ module windowed #(
 
   always_ff @(posedge clk or negedge aresetn) begin
     if (!aresetn) begin
-      window_ff <= 1'b1; // marker to control windows_started_ff
+      window_ff[WINDOW_SIZE-1] <= 1'b1; // marker to control windows_started_ff
     end else if (s_valid && s_ready) begin
-      window_ff <= {window_ff[WINDOW_SIZE-2:0], s_data};
+      window_ff <= {s_data, window_ff[WINDOW_SIZE-1:1]};
     end
   end
 
@@ -39,7 +39,7 @@ module windowed #(
       if (s_valid && s_ready) begin
         if (windows_started_ff) begin
           valid_ff <= '1;
-        end else if (!windows_started_ff && window_ff[WINDOW_SIZE-1][0] == 1'b1) begin
+        end else if (!windows_started_ff && window_ff[0] == 1'b1) begin
           windows_started_ff <= '1;
           valid_ff <= '1;
         end
