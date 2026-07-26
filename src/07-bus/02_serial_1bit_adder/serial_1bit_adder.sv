@@ -38,8 +38,12 @@ module serial_1bit_adder(
       bit_2_ff <= '0;
       carry_ff <= '0;
     end else begin
-      if (num_1_is_over) bit_1_ff <= '0;
-      if (num_2_is_over) bit_2_ff <= '0;
+      // (если число закончилось, и последний бит уже был учтён) или
+      // (если число закончилось на предыдущем такте, и последний бит будет учтён на этом такте)
+      if ((num_1_is_over && !valid_1_ff) || (m_valid && m_ready && num_1_is_over))
+        bit_1_ff <= '0;
+      if ((num_2_is_over && !valid_2_ff) || (m_valid && m_ready && num_2_is_over))
+        bit_2_ff <= '0;
 
       if (s_valid_1 && s_ready_1) begin
         bit_1_ff <= s_data_1;
@@ -70,14 +74,6 @@ module serial_1bit_adder(
       if (m_valid && m_ready) begin
         valid_1_ff <= '0;
         valid_2_ff <= '0;
-        if (nums_are_over_but_last_carry_is_1) begin // Nulls at both inputs
-          valid_1_ff <= '1;
-          valid_2_ff <= '1;
-        end else begin
-          if (num_1_is_over && !num_2_is_over) valid_1_ff <= '1; // Nulls at input 1
-          else if (num_2_is_over && !num_1_is_over) valid_2_ff <= '1; // Nulls at input 2
-          // Else both numbers are over and carry is 0. Nothing to do
-        end
 
         if (m_is_last_bit) begin
           num_1_is_over <= '0;
@@ -98,13 +94,13 @@ module serial_1bit_adder(
 
   // Outputs logic
   always_comb begin
-    m_valid = valid_1_ff && valid_2_ff;
+    m_valid = (valid_1_ff || num_1_is_over) && (valid_2_ff || num_2_is_over);
     s_ready_1 =
       !(m_valid && !m_ready) && !(num_1_is_over && !num_2_is_over) &&
-      !nums_are_over_but_last_carry_is_1;
+      !nums_are_over_but_last_carry_is_1 && !(valid_1_ff && (!valid_2_ff && !num_2_is_over));
     s_ready_2 =
       !(m_valid && !m_ready) && !(num_2_is_over && !num_1_is_over) &&
-      !nums_are_over_but_last_carry_is_1;
+      !nums_are_over_but_last_carry_is_1 && !(valid_2_ff && (!valid_1_ff && !num_1_is_over));
     m_data = bit_1_ff + bit_2_ff + carry_ff;
     m_is_last_bit = (num_1_is_over && num_2_is_over && !carry);
   end
