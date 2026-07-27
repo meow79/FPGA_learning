@@ -1,5 +1,5 @@
 module windowed #(
-  parameter int DATA_WIDTH = 1,
+  parameter int DATA_WIDTH = 8,
   parameter int WINDOW_SIZE = 3
 ) (
   input logic clk,
