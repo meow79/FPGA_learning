@@ -1,10 +1,10 @@
 module scalar_product_float_to_byte_tb;
   localparam int Length = 6;
 
-  logic [31:0] float_vector [Length];
-  byte unsigned byte_vector [Length];
+  logic [Length-1:0][31:0] float_vector;
+  logic [Length-1:0][7:0] byte_vector;
 
-  byte unsigned byte_out;
+  logic [7:0] byte_out;
   logic [8:0] expected;
 
   scalar_product_float_to_byte #(.VECTORS_LENGTH(Length))
@@ -19,9 +19,9 @@ module scalar_product_float_to_byte_tb;
     byte unsigned float_to_byte_saturated;
 
     float_vector =
-        '{$shortrealtobits(12.5), $shortrealtobits(17.22), $shortrealtobits(0.33),
-          $shortrealtobits(0.24804688), $shortrealtobits(1.0), $shortrealtobits(0.999999)};
-      byte_vector = '{10, 2, 36, 155, 15, 6};
+        {$shortrealtobits(12.5), $shortrealtobits(17.22), $shortrealtobits(0.33),
+         $shortrealtobits(0.24804688), $shortrealtobits(1.0), $shortrealtobits(0.999999)};
+      byte_vector = {8'd10, 8'd2, 8'd36, 8'd155, 8'd15, 8'd6};
 
     $display("Scalar product float to byte test...");
     $display("---");
