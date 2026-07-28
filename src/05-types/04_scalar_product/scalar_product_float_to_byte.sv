@@ -1,12 +1,12 @@
 module scalar_product_float_to_byte #(
   parameter int VECTORS_LENGTH = 8
 ) (
-  input byte unsigned uint8_vector [VECTORS_LENGTH],
-  input logic [31:0] float_vector [VECTORS_LENGTH],
-  output byte unsigned uint8_out
+  input logic [VECTORS_LENGTH-1:0][7:0] uint8_vector,
+  input logic [VECTORS_LENGTH-1:0][31:0] float_vector,
+  output logic [7:0] uint8_out
 );
-  byte unsigned mult_results_vector [VECTORS_LENGTH];
-  byte unsigned temp_sums [VECTORS_LENGTH];
+  logic [VECTORS_LENGTH-1:0][7:0] mult_results_vector;
+  logic [VECTORS_LENGTH-1:0][7:0] temp_sums;
 
   assign temp_sums[0] = mult_results_vector[0];
   assign uint8_out = temp_sums[VECTORS_LENGTH - 1];
