@@ -57,5 +57,9 @@ src/
 │   ├── 03_pairwise_test         |
 │   └── 04_windowed_test       ──┘
 │
+├── 10-fpga
+│   ├── 01_huffman_decoder
+│   └── 03_counter
+|
 └── Makefile    # Используется для запуска тестов к различным решениям задач
 ```
