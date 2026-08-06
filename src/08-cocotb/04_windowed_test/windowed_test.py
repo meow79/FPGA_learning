@@ -11,6 +11,7 @@ class HelperWindowed:
     current_window = [0] * WindowSize
     valid_elements_cnt = 0
     out_valid = 0
+    out_last = 0
 
     def __init__(self, dut):
         self.dut = dut
@@ -27,6 +28,7 @@ class HelperWindowed:
     def generate_rnd_input(self):
         self.dut.s_valid.value = random.randint(0, 1)
         self.dut.s_data.value = LogicArray([random.randint(0, 1) for _ in range(self.DataWidth)])
+        self.dut.s_last.value = 1 if random.random() < 0.1 else 0
         self.dut.m_ready.value = random.randint(0, 1)
 
     def model_windowed(self):
@@ -34,9 +36,14 @@ class HelperWindowed:
             self.current_window = [0] * self.WindowSize
             self.valid_elements_cnt = 0
             self.out_valid = 0
+            self.out_last = 0
         else:
             if self.out_valid and self.dut.m_ready.value:
                 self.out_valid = 0
+                if self.out_last:
+                    self.current_window = [0] * self.WindowSize
+                    self.valid_elements_cnt = 0
+                    self.out_last = 0
 
             if self.dut.s_valid.value and self.dut.s_ready.value:
                 self.current_window = [int(self.dut.s_data.value)] + self.current_window[0:self.WindowSize-1]
@@ -44,6 +51,9 @@ class HelperWindowed:
                     self.valid_elements_cnt += 1
                 if self.valid_elements_cnt == self.WindowSize:
                     self.out_valid = 1
+
+                if self.dut.s_last.value:
+                    self.out_last = 1
 
 @cocotb.test()
 async def windowed_test(dut):
@@ -75,6 +85,9 @@ async def windowed_test(dut):
             assert (
                 dut.m_data.value == expected_out
             ), f"Incorrect m_data. Expected: {expected_out}, actual: {dut.m_data.value}"
+            assert (
+                dut.m_last.value == helper.out_last
+            ), f"Incorrect m_last. Expected: {helper.out_last}, actual: {dut.m_last.value}"
         else:
             assert not dut.m_valid.value, f"Incorrect m_valid. Expected: 0, actual: {dut.m_valid.value}"
 
