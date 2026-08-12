@@ -4,5 +4,8 @@
     "verilog.linting.linter": "iverilog",
     "[systemverilog]": {
         "editor.tabSize": 2
+    },
+    "[python]": {
+        "editor.tabSize": 4
     }
 }
