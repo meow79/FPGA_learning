@@ -35,7 +35,7 @@ module scalar_product_float_to_byte_tb;
         else if (float_to_byte > 255)
           float_to_byte_saturated = 255;
         else
-          float_to_byte_saturated = $rtoi(float_to_byte);
+          float_to_byte_saturated = $rtoi(float_to_byte + 0.5);
 
         expected += float_to_byte_saturated;
         if (expected > 255)

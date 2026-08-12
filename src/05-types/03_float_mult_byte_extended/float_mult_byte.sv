@@ -13,7 +13,7 @@ module float_mult_byte (
   logic [31:0] scaled_mantissa;
   logic [31:0] mantissa_to_uint;
   logic [31:0] uint_extended;
-  logic [32:0] fraction_sum;
+  logic [32:0] sum_for_rounding;
 
   always_comb begin
 
@@ -48,20 +48,21 @@ module float_mult_byte (
             (uint_extended << exp_shift);
       else if (exp_shift >= 0) begin
         mantissa_to_uint = mantissa * uint8_in;
+        sum_for_rounding = 1 << (-(exp_shift - 23) - 1);
         scaled_mantissa =
-          (mantissa_to_uint >> (-(exp_shift - 23))) +
+          ((mantissa_to_uint + sum_for_rounding) >> (-(exp_shift - 23))) +
           (uint_extended << exp_shift);
       end else begin
-        mantissa_to_uint = mantissa * uint8_in;
-        if ((uint_extended << (32 + exp_shift)) == 0)
-          fraction_sum  = (mantissa_to_uint << (32 + (exp_shift - 23)));
-        else
-          fraction_sum =
-            (mantissa_to_uint << (32 + (exp_shift - 23))) +
-            (uint_extended << (32 + exp_shift));
+        // прибавление к мантиссе половины эпсилон перед умножением позволяет
+        // нейтрализовать накопившуюся при умножении ошибку, которая может возникнуть из-за
+        // неточного представления числа с плавающей запятой
+        // Например, в результате умножения вместо числа x.5 из-за неточного представления
+        // может получиться число меньшее x.5, но очень близкое к нему. И без этого
+        // прибавления половины эпсилон число округлится до x, а должно до x+1
+        mantissa_to_uint = ({mantissa, 1'b1} * uint8_in) >> 1;
+        sum_for_rounding = 1 << (-(exp_shift - 23) - 1);
         scaled_mantissa =
-          (mantissa_to_uint >> -(exp_shift - 23)) +
-          (uint_extended >> -exp_shift) + fraction_sum[32];
+          ((uint_extended << 23) + mantissa_to_uint + sum_for_rounding) >> (-(exp_shift - 23));
       end
 
       if (sign) begin
