@@ -35,7 +35,7 @@ module float_mult_byte_tb;
 
         if (mult_res > 255) expected = 255;
         else if (mult_res <= 0) expected = 0;
-        else expected = $rtoi(mult_res);
+        else expected = $rtoi(mult_res + 0.5);
 
         #10;
         assert (!is_result_nan)
