@@ -5,6 +5,11 @@ module convolution_1d #(
   input logic clk,
   input logic aresetn,
 
+  // Input to override filter
+  input logic weight_valid,
+  input logic [$clog2(FILTER_SIZE)-1:0] weight_adr,
+  input logic [31:0] weight,
+
   // Input from master
   input logic s_valid,
   output logic s_ready,
@@ -17,6 +22,17 @@ module convolution_1d #(
   output logic [7:0] m_data,
   output logic m_last
 );
+  logic [FILTER_SIZE-1:0][31:0] filter;
+
+  // Filter overriding logic
+  always_ff @(posedge clk or negedge aresetn) begin
+    if (!aresetn) begin
+      filter <= FILTER_OF_FLOATS; // standard value
+    end else if (weight_valid) begin
+      filter[weight_adr] <= weight;
+    end
+  end
+
   localparam int PaddingSize = FILTER_SIZE / 2;
 
   logic s_valid_to_windowed;
@@ -43,7 +59,7 @@ module convolution_1d #(
   scalar_product_float_to_byte #(.VECTORS_LENGTH(FILTER_SIZE))
   scalar_product(
     .uint8_vector(current_input_slice),
-    .float_vector(FILTER_OF_FLOATS), // implicit cast to 2d packed array
+    .float_vector(filter),
     .uint8_out(m_data)
   );
 

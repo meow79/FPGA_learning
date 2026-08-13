@@ -30,8 +30,19 @@ class Convolution1DHelper:
         self.dut.aresetn.value = 1
 
     async def setup(self):
+        self.dut.weight_valid.value = 0
+
         self.dut.s_valid.value = 0
         self.dut.m_ready.value = random.randint(0, 1)
+
+    async def init_filter(self):
+        for i in range(0, self.FILTER_SIZE):
+            self.dut.weight_valid.value = 1
+            self.dut.weight_adr.value = LogicArray.from_unsigned(i, math.ceil(math.log2(self.FILTER_SIZE)))
+            self.dut.weight.value = float_to_bits_str(self.FILTER[i])
+            await RisingEdge(self.dut.clk)
+        self.dut.weight_valid.value = 0
+        await RisingEdge(self.dut.clk)
 
     def generate_rnd_input(self):
         self.dut.s_valid.value = random.randint(0, 1)
@@ -90,6 +101,11 @@ async def convolution_1d_test(dut):
 
     await RisingEdge(dut.aresetn)
 
+    await helper.init_filter()
+    assert (
+        dut.filter.value == float_list_to_bits_str(helper.FILTER)
+    ), f"Incorrect filter. Expected: {float_list_to_bits_str(helper.FILTER)}, actual: {dut.filter.value}"
+
     dut_res = []
     for _ in range(NOfIterations):
         helper.model_convolution_1d()
@@ -132,7 +148,7 @@ def run_test(filter):
     runner.build(
         sources=sources,
         hdl_toplevel="convolution_1d",
-        parameters={"FILTER_SIZE": len(filter),"FILTER_OF_FLOATS": int(float_list_to_bits_str(filter), 2)},
+        parameters={"FILTER_SIZE": len(filter),"FILTER_OF_FLOATS": "0" * 32 * len(filter)},
         timescale=("1ns", "1ps"),
         always=True
     )
@@ -143,11 +159,14 @@ def run_test(filter):
         extra_env={"FILTER_SIZE": str(len(filter)), "FILTER": ','.join(map(str, filter))}
     )
 
+def float_to_bits_str(float_num):
+    int_from_float = struct.unpack("I", struct.pack("f", float_num))[0]
+    return f"{int_from_float:032b}"
+
 def float_list_to_bits_str(float_list):
     res = ""
     for float_num in float_list:
-        int_from_float = struct.unpack("I", struct.pack("f", float_num))[0]
-        res = f"{int_from_float:032b}" + res
+        res = float_to_bits_str(float_num) + res
     return res
 
 if __name__ == "__main__":
