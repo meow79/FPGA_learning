@@ -10,10 +10,11 @@ jobs:
     steps:
       - name: Set up repository
         uses: actions/checkout@v4
-      - name: Install make
+      - name: Install dependencies
         run: |
           apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends make
+          DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends make python3 python3-pip libpython3-dev
+          pip install "cocotb~=2.0"
       - name: Build and start testbenches
         run: |
           find src -type f -name build_and_test_all.sh -execdir '{}' '+'
