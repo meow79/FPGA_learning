@@ -3,13 +3,14 @@ import math
 import os
 import random
 import struct
+import sys
 
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, RisingEdge
 from cocotb.types import LogicArray
 from cocotb.utils import get_sim_time
-from cocotb_tools.runner import get_runner
+from cocotb_tools.runner import get_results, get_runner
 
 
 class HelperConvolution2D:
@@ -183,32 +184,39 @@ def run_test(filter):
         always=True
     )
 
-    runner.test(
+    results_xml_path = runner.test(
         hdl_toplevel="convolution_2d",
         test_module="convolution_2d_test",
         extra_env={"FILTER": str(filter)}
     )
+
+    return get_results(results_xml_path)[1]
 
 def float_to_bits_str(float_num):
     int_from_float = struct.unpack("I", struct.pack("f", float_num))[0]
     return f"{int_from_float:032b}"
 
 if __name__ == "__main__":
-    run_test(
-        filter=[[1/9, 1/9, 1/9],
-                [1/9, 1/9, 1/9],
-                [1/9, 1/9, 1/9]]
-    )
-    run_test(
-        filter=[[-1, -1, -1],
-                [-1, 8, -1],
-                [-1, -1, -1]]
-    )
-    run_test(
-        filter=[[0.1, 0.2, 0.3],
-                [0.25, 0.003, 0.4],
-                [-2, 0.03, 0.1]]
-    )
-    run_test(
-        filter=[[float(random.random()) for _ in range(5)] for _ in range(5)]
-    )
+    filters = [
+        [
+            [1 / 9, 1 / 9, 1 / 9],
+            [1 / 9, 1 / 9, 1 / 9],
+            [1 / 9, 1 / 9, 1 / 9],
+        ],
+        [
+            [-1, -1, -1],
+            [-1, 8, -1],
+            [-1, -1, -1],
+        ],
+        [
+            [0.1, 0.2, 0.3],
+            [0.25, 0.003, 0.4],
+            [-2, 0.03, 0.1],
+        ],
+        [[float(random.random()) for _ in range(5)] for _ in range(5)],
+    ]
+
+    rc = []
+    for filter in filters:
+        rc.append(run_test(filter))
+    sys.exit(max(rc) > 0)
