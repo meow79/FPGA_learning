@@ -2,12 +2,13 @@ import math
 import os
 import random
 import struct
+import sys
 
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, RisingEdge
 from cocotb.types import LogicArray
-from cocotb_tools.runner import get_runner
+from cocotb_tools.runner import get_results, get_runner
 
 
 class Convolution1DHelper:
@@ -153,11 +154,13 @@ def run_test(filter):
         always=True
     )
 
-    runner.test(
+    results_xml_path = runner.test(
         hdl_toplevel="convolution_1d",
         test_module="convolution_1d_test",
         extra_env={"FILTER_SIZE": str(len(filter)), "FILTER": ','.join(map(str, filter))}
     )
+
+    return get_results(results_xml_path)[1]
 
 def float_to_bits_str(float_num):
     int_from_float = struct.unpack("I", struct.pack("f", float_num))[0]
@@ -170,6 +173,13 @@ def float_list_to_bits_str(float_list):
     return res
 
 if __name__ == "__main__":
-    run_test(filter=[0.33, 0.33, 0.33])
-    run_test(filter=[-1.0, 2.0, -1.0])
-    run_test(filter=[0.1, 0.2, 0.9, 0.2, 0.1])
+    filters = [
+        [0.33, 0.33, 0.33],
+        [-1.0, 2.0, -1.0],
+        [0.1, 0.2, 0.9, 0.2, 0.1],
+    ]
+
+    rc = []
+    for filter in filters:
+        rc.append(run_test(filter))
+    sys.exit(max(rc) > 0)
